@@ -1,6 +1,7 @@
 import pygame as pg
 import sys
 from button import *
+from graph import *
 
 WHITE = (255, 255, 255)
 GRAY = (125, 125, 125)
@@ -84,14 +85,16 @@ class VertexGroup(pg.sprite.Group):
             j += 1
             b[0].color = GRAY
             b[1].color = GRAY
-            graph.append((b[0], b[1]))
-            graph.append((b[1], b[0]))
+            graph.append((b[0].name, b[1].name))
+            graph.append((b[1].name, b[0].name))
             b[0].update()
             b[1].update()
             a.clear()
             b.clear()
 
 
+def myFunction():
+    G = Graph(graph, i)
 
 screen = pg.display.set_mode((800,640))
 screen.fill(WHITE)

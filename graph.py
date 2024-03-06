@@ -20,7 +20,7 @@ class Graph(object):
                 a = []
                 for j in graph:
                     if j[0] == i:
-                        a.append(j[0])
+                        a.append(j[1])
                 b[i] = set(a)
             self.graph = b
         else:
