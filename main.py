@@ -82,15 +82,40 @@ class VertexGroup(pg.sprite.Group):
             j += 1
             b[0].color = GRAY
             b[1].color = GRAY
-            graph.append((b[0].name, b[1].name))
-            graph.append((b[1].name, b[0].name))
+            graph.append((b[0].name, b[1].name, 1))
+            graph.append((b[1].name, b[0].name, 1))
             b[0].update()
             b[1].update()
             b.clear()
 
 
 def myFunction():
+    global b
     G = Graph(graph, i)
+    b[0].color = GRAY
+    bellman_ford(G.graph, G.n, b[0].name)
+
+def bellman_ford(graph, n, s):
+    global gr, screen
+    dist = [float('inf')] * n
+    dist[s] = 0
+    for _ in range(n - 1):
+        for src, dest, weight in graph:
+            for v in gr.spritedict:
+                if v.name == src:
+                    v.color = PINK if v.color == GRAY else GRAY
+                    v.update()
+                    pygame.display.update()
+                    pygame.time.delay(400)
+                    """for k in gr.spritedict:
+                        if k.name == dest:
+                            for e in """
+
+            if dist[src] + weight < dist[dest]:
+                dist[dest] = dist[src] + weight
+
+
+    return dist
 
 screen = pg.display.set_mode((800,640))
 screen.fill(WHITE)

@@ -13,7 +13,7 @@ class Graph(object):
             self.graph = graph
             self.n = n
         elif isinstance(graph[0], tuple):
-            "Проверка, является ли данный полученные данные списком ребер"
+            """"Проверка, является ли данный полученные данные списком ребер"
             self.n = n
             b = {}
             for i in range(self.n):
@@ -22,7 +22,9 @@ class Graph(object):
                     if j[0] == i:
                         a.append(j[1])
                 b[i] = set(a)
-            self.graph = b
+            self.graph = b"""
+            self.n = n
+            self.graph = graph
         else:
             "Проверка, является ли данный полученные данные матрицей смежности"
             self.n = n
