@@ -1,4 +1,6 @@
 import pygame as pg
+import sys
+from button import *
 
 WHITE = (255, 255, 255)
 GRAY = (125, 125, 125)
@@ -39,15 +41,23 @@ class VertexClass(pg.sprite.Sprite):
 
     def update(self):
         pg.draw.circle(self.image, self.color, (self.size // 2,self.size // 2), self.size // 2)
-        self.screen.blit(self.image, (self.rect.x-20, self.rect.y-20))
+        #self.screen.blit(self.image, (self.rect.x-20, self.rect.y-20))
+        self.screen.blit(self.image, (self.rect.x, self.rect.y))
 
+
+i = 0
+j = 0
+a = []
+b = []
+graph = []
 class VertexGroup(pg.sprite.Group):
     '''
         Группа вершин графов
         По клику на вершину цвет меняется
     '''
 
-    def update(self, events, screen=None, i=None, j=None, a=None):
+    def update(self, events, screen=None):
+        global graph, St
         self.ch = False
         for event in events:
             if event.type == pg.MOUSEBUTTONDOWN:
@@ -55,42 +65,49 @@ class VertexGroup(pg.sprite.Group):
                 for v in self.spritedict:
                     if v.rect.collidepoint(event.pos):
                         self.ch = True
-                        v.color = PINK if v.color == GRAY else GRAY
-                        self.addedge(pg.mouse.get_pos(), j, screen)
+                        if v.color == GRAY:
+                            v.color = PINK
+                            self.addedge(v, pg.mouse.get_pos(), screen)
                 if self.ch is False:
-                    self.add(VertexClass(i, screen, pos=pg.mouse.get_pos()))
-                    i += 1
+                    if not St.buttonRect.collidepoint(pg.mouse.get_pos()):
+                        global i
+                        self.add(VertexClass(i, screen, pos=pg.mouse.get_pos()))
+                        i += 1
         super().update()
-    def addedge(self, pos, j, screen):
-        self.pos = pos
-        a.append(self.pos)
+    def addedge(self, v, pos, screen):
+        global a, b, j, graph
+        b.append(v)
+        a.append(pos)
         if len(a) == 2:
             A = Edge(j, screen, pos = a)
             A.update()
             j += 1
+            b[0].color = GRAY
+            b[1].color = GRAY
+            graph.append((b[0], b[1]))
+            graph.append((b[1], b[0]))
+            b[0].update()
+            b[1].update()
             a.clear()
+            b.clear()
 
 
 
-screen = pg.display.set_mode((640,320))
+screen = pg.display.set_mode((800,640))
 screen.fill(WHITE)
 # создаём вершины и помещаем их в группу
 gr = VertexGroup()
-"""
-for i in range(5):
-    gr.add(VertexClass(i, screen, pos=(100+100*i, 100)))
-"""
-i = 0
-j = 0
-a = []
+St = Button(screen, 450, 540, 300, 50, 'Нажми, чтобы начать обход по графу', myFunction)
 running = True
 while running:
     events = pg.event.get()
     for event in events:
         if event.type == pg.QUIT:
             running = False
+    for object in objects:
+        object.process(screen)
     # список полученных событий передаётся как параметр в функцию update группы вершин
-    gr.update(events, screen, i, j, a)
+    gr.update(events, screen)
     pg.display.update()
     pg.time.delay(100)
 
