@@ -2,7 +2,7 @@ import pygame as pg
 import sys
 from button import *
 from graph import *
-from title import *
+#from title import *
 import random
 
 WHITE = (255, 255, 255)
