@@ -2,10 +2,13 @@ import pygame as pg
 import sys
 from button import *
 from graph import *
+from title import *
+import random
 
 WHITE = (255, 255, 255)
 GRAY = (125, 125, 125)
 PINK = (230, 50, 230)
+num = 20
 
 class Edge(pg.sprite.Sprite):
     '''
@@ -15,6 +18,8 @@ class Edge(pg.sprite.Sprite):
         super().__init__()
         self.v1 = v1
         self.v2 = v2
+        self.w = random.randint(1, num)
+        print("Первая вершина:", self.v1, "Вторая вершина:", self.v2, "Вес:", self.w)
         self.color = color
         self.screen = screen
         self.size = size
@@ -23,6 +28,7 @@ class Edge(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.pos = (pos1, pos2)
     def update(self):
+        global text, screen
         pg.draw.line(self.screen, self.color, self.pos[0], self.pos[1], self.size)
         self.screen.blit(self.image, (self.pos[0][0], self.pos[0][1]))
 
@@ -38,9 +44,10 @@ class VertexClass(pg.sprite.Sprite):
     '''
         Класс вершин графа
     '''
-    def __init__(self, name, screen, color=GRAY, size=50, pos=None):
+    def __init__(self, name, screen, color=GRAY, size=35, pos=None):
         super().__init__()
         self.name = name
+        print(self.name)
         self.color = color
         self.size = size
         self.screen = screen
@@ -86,30 +93,43 @@ class VertexGroup(pg.sprite.Group):
         global b, graph, ed
         b.append(v)
         if len(b) == 2:
-            ed.update(Edge(b[0].name, b[1].name, screen, pos1 = b[0].center, pos2 = b[1].center))
+            A = Edge(b[0].name, b[1].name, screen, pos1 = b[0].center, pos2 = b[1].center)
+            ed.update(A)
             b[0].color = GRAY
             b[1].color = GRAY
-            graph.append((b[0].name, b[1].name, 1))
-            graph.append((b[1].name, b[0].name, 1))
+            graph.append((b[0].name, b[1].name, A.w))
             b[0].update()
             b[1].update()
             b.clear()
 
 
 def myFunction():
-    global b
+    global b, gr
     G = Graph(graph, i)
+    if len(b) == 0:
+        for g in gr.spritedict:
+            if g.name == 0:
+                b.append(g)
+                break
     b[0].color = GRAY
-    bellman_ford(G.graph, G.n, b[0].name)
+    ans = bellman_ford(G.graph, G.n, b[0].name)
+    print("Ответ:")
+    for j in range(i):
+        print("Расстояние от вершины", b[0].name, "до", j, "->", ans[j])
 
 def upd(v):
-    v.color = PINK if v.color == GRAY else GRAY
+    if v.color == PINK:
+        v.color = GRAY
+        v.update()
+        pygame.display.update()
+        pygame.time.delay(500)
+    v.color = PINK
     v.update()
     pygame.display.update()
     pygame.time.delay(500)
 
 def bellman_ford(graph, n, s):
-    global gr, screen
+    global gr, screen, ed
     dist = [float('inf')] * n
     dist[s] = 0
     for _ in range(n - 1):
@@ -118,7 +138,7 @@ def bellman_ford(graph, n, s):
                 if v.name == src:
                     upd(v)
                     for k in ed.spritedict:
-                        if (k.v1 == dest and k.v2 == src) or (k.v1 == src and k.v2 == dest):
+                        if k.v1 == src and k.v2 == dest:
                             upd(k)
                             break
                     break
@@ -129,39 +149,23 @@ def bellman_ford(graph, n, s):
 
             if dist[src] + weight < dist[dest]:
                 dist[dest] = dist[src] + weight
+            print("Расстояние от начальной вершины до "+str(dest)+":", dist[dest])
 
-        i = n - 1
-        c = 0
         for e in gr.spritedict:
-            if e.name == i and e.color == PINK:
-                c = e
-                break
-
-        for j in range(n - 1):
-            if isinstance(c, int):
-                break
-            else:
-                upd(c)
-                for v in ed.spritedict:
-                    if (v.v1 == c.name or v.v2 == c.name) and v.color == PINK:
-                        upd(v)
-                        if v.v1 != c.name:
-                            for f in gr.spritedict:
-                                if f.name == v.v1:
-                                    c = f
-                                    break
-                        elif v.v2 != c.name:
-                            for f in gr.spritedict:
-                                if f.name == v.v2:
-                                    c = f
-                                    break
-                        break
+            e.color = GRAY
+            e.update()
+        for l in ed.spritedict:
+            l.color = GRAY
+            l.update()
+        pygame.display.update()
+        pygame.time.delay(500)
 
 
     return dist
 
 screen = pg.display.set_mode((800,640))
 screen.fill(WHITE)
+
 # создаём вершины и помещаем их в группу
 gr = VertexGroup()
 ed = EdgeGroup()
