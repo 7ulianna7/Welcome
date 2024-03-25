@@ -2,7 +2,6 @@ import pygame as pg
 import sys
 from button import *
 from graph import *
-#from title import *
 import random
 
 WHITE = (255, 255, 255)
@@ -130,11 +129,11 @@ def upd(v):
         v.color = GRAY
         v.update()
         pygame.display.update()
-        pygame.time.delay(500)
+        pygame.time.delay(300)
     v.color = PINK
     v.update()
     pygame.display.update()
-    pygame.time.delay(500)
+    pygame.time.delay(300)
 
 def bellman_ford(graph, n, s):
     # ункция обхода графа Беллмана-Форда
@@ -173,7 +172,7 @@ def bellman_ford(graph, n, s):
             l.color = GRAY
             l.update()
         pygame.display.update()
-        pygame.time.delay(500)
+        pygame.time.delay(300)
 
 
     return dist
